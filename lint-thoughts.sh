@@ -16,7 +16,7 @@ check_file() {
   local file_errors=()
 
   # Skip agent docs and the lint script itself
-  [[ "$name" == "AGENTS.md" || "$name" == "CLAUDE.md" || "$name" == "lint-thoughts.sh" ]] && return
+  [[ "$name" == "AGENTS.md" || "$name" == "CLAUDE.md" || "$name" == "README.md" || "$name" == "lint-thoughts.sh" ]] && return
 
   # 1. Has YAML frontmatter (first line is ---)
   if ! head -1 "$file" | rg -q "^---$"; then
