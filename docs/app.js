@@ -1,24 +1,18 @@
 const state = {
   notes: [],
+  tags: [],
+  years: [],
   filtered: [],
   activeSlug: null,
-  search: '',
-  group: 'all',
+  selectedTag: 'all',
+  selectedYear: 'all',
 };
 
 const els = {
   noteList: document.getElementById('note-list'),
   reader: document.getElementById('reader'),
-  search: document.getElementById('search-input'),
-  groupFilters: document.getElementById('group-filters'),
-  resultCount: document.getElementById('result-count'),
-  resultCountDup: document.getElementById('result-count-dup'),
-  countNotes: document.getElementById('count-notes'),
-  countGroups: document.getElementById('count-groups'),
-  countTags: document.getElementById('count-tags'),
-  generatedAt: document.getElementById('generated-at'),
-  randomBtn: document.getElementById('random-btn'),
-  latestBtn: document.getElementById('latest-btn'),
+  tagFilters: document.getElementById('tag-filters'),
+  yearFilter: document.getElementById('year-filter'),
   clearBtn: document.getElementById('clear-btn'),
 };
 
@@ -27,6 +21,15 @@ const formatDate = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   year: 'numeric',
 });
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function hashForSlug(slug) {
   return `#note=${encodeURIComponent(slug)}`;
@@ -45,57 +48,65 @@ function getNoteBySlug(slug) {
   return state.notes.find((note) => note.slug === slug) || null;
 }
 
-function noteMatches(note) {
-  const search = state.search.trim().toLowerCase();
-  const group = state.group;
+function prettyTag(tag) {
+  return tag
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
 
-  if (group !== 'all' && !note.groups.includes(group)) {
+function noteMatches(note) {
+  if (state.selectedTag !== 'all' && !note.tags.includes(state.selectedTag)) {
     return false;
   }
 
-  if (!search) {
-    return true;
+  if (state.selectedYear !== 'all' && note.date.slice(0, 4) !== state.selectedYear) {
+    return false;
   }
 
-  return note.searchText.includes(search);
+  return true;
 }
 
-function renderFilters() {
-  const chips = ['all', ...state.groups];
-  els.groupFilters.innerHTML = chips
-    .map((group) => {
-      const label = group === 'all' ? 'All' : group;
-      return `<button class="filter-chip" data-group="${group}" data-active="${group === state.group}">${label}</button>`;
+function renderTagFilters() {
+  const chips = ['all', ...state.tags];
+  els.tagFilters.innerHTML = chips
+    .map((tag) => {
+      const active = tag === state.selectedTag;
+      const label = tag === 'all' ? 'All tags' : prettyTag(tag);
+      return `<button class="filter-chip" type="button" data-tag="${escapeHtml(tag)}" data-active="${active}">${escapeHtml(label)}</button>`;
     })
     .join('');
+}
+
+function renderYearFilter() {
+  const years = ['all', ...state.years];
+  els.yearFilter.innerHTML = years
+    .map((year) => {
+      const label = year === 'all' ? 'All dates' : year;
+      return `<option value="${escapeHtml(year)}">${escapeHtml(label)}</option>`;
+    })
+    .join('');
+
+  els.yearFilter.value = state.selectedYear;
 }
 
 function renderList() {
-  state.filtered = state.notes.filter(noteMatches);
-  els.resultCount.textContent = `${state.filtered.length} note${state.filtered.length === 1 ? '' : 's'}`;
-  if (els.resultCountDup) {
-    els.resultCountDup.textContent = els.resultCount.textContent;
-  }
-  els.noteList.innerHTML = state.filtered
-    .map((note) => {
-      const active = note.slug === state.activeSlug;
-      const groups = note.groups.slice(0, 2).join(' · ');
-      const tags = note.tags.slice(0, 3);
-      return `
-        <button class="note-btn" data-slug="${note.slug}" data-active="${active}">
-          <div class="note-meta-line">
-            <time datetime="${note.date}">${formatDate.format(new Date(`${note.date}T12:00:00Z`))}</time>
-            <span>${groups}</span>
-          </div>
-          <h3>${note.title}</h3>
-          <div class="note-excerpt">${note.excerpt}</div>
-          <div class="note-tags">
-            ${tags.map((tag) => `<span class="tag-chip">${tag}</span>`).join('')}
-          </div>
-        </button>
-      `;
-    })
-    .join('');
+  els.noteList.innerHTML = state.filtered.length
+    ? state.filtered
+        .map((note) => {
+          const active = note.slug === state.activeSlug;
+          return `
+            <button class="note-btn" type="button" data-slug="${escapeHtml(note.slug)}" data-active="${active}">
+              <div class="note-meta-line">
+                <time datetime="${escapeHtml(note.date)}">${escapeHtml(formatDate.format(new Date(`${note.date}T12:00:00Z`)))}</time>
+              </div>
+              <h3>${escapeHtml(note.title)}</h3>
+            </button>
+          `;
+        })
+        .join('')
+    : '<div class="empty-state">No notes match these filters.</div>';
 }
 
 function renderReader(note) {
@@ -105,7 +116,7 @@ function renderReader(note) {
         <div>
           <p class="reader-kicker">Thoughts</p>
           <h2>Select a note</h2>
-          <p>Pick a note from the archive, search the vault, or hit random to jump somewhere unexpected.</p>
+          <p>Choose a tag or a year, then open a note from the archive.</p>
         </div>
       </div>
     `;
@@ -113,93 +124,52 @@ function renderReader(note) {
     return;
   }
 
-  const related = note.links
-    .map((slug) => getNoteBySlug(slug))
-    .filter(Boolean)
-    .map((target) => `<a class="pill" href="${hashForSlug(target.slug)}">${target.title}</a>`)
-    .join('');
-
-  const backlinks = note.backlinks
-    .map((slug) => getNoteBySlug(slug))
-    .filter(Boolean)
-    .map((source) => `<a class="pill" href="${hashForSlug(source.slug)}">${source.title}</a>`)
-    .join('');
-
   els.reader.innerHTML = `
-    <section class="reader-section">
-      <header class="reader-head">
-        <div class="reader-kicker">Note</div>
-        <h2>${note.title}</h2>
-        <div class="reader-meta">
-          <time datetime="${note.date}">${formatDate.format(new Date(`${note.date}T12:00:00Z`))}</time>
-          <span>•</span>
-          <span>${note.groups.join(' · ')}</span>
-        </div>
-        <div class="note-tags">
-          ${note.tags.map((tag) => `<span class="tag-chip">${tag}</span>`).join('')}
-        </div>
-      </header>
-
-      <div class="reader-body">${note.bodyHtml}</div>
-    </section>
-
-    <section class="reader-section">
-      <div class="reader-footer">
-        <div>
-          <h3>Related</h3>
-          <div class="related-list">
-            ${related || '<span class="empty-state">No linked notes found in the footer yet.</span>'}
-          </div>
-        </div>
-
-        <div>
-          <h3>Linked from</h3>
-          <div class="backlink-list">
-            ${backlinks || '<span class="empty-state">Nothing points here yet.</span>'}
-          </div>
-        </div>
-
-        ${
-          note.footerHtml
-            ? `<details class="footer-disclosure">
-                <summary>Original footer</summary>
-                <div class="reader-body footer-copy">${note.footerHtml}</div>
-              </details>`
-            : ''
-        }
+    <header class="reader-head">
+      <p class="reader-kicker">Note</p>
+      <h2>${escapeHtml(note.title)}</h2>
+      <div class="reader-meta">
+        <time datetime="${escapeHtml(note.date)}">${escapeHtml(formatDate.format(new Date(`${note.date}T12:00:00Z`)))}</time>
       </div>
-    </section>
+      <div class="reader-tags">
+        ${note.tags.map((tag) => `<span class="tag-chip">${escapeHtml(prettyTag(tag))}</span>`).join('')}
+      </div>
+    </header>
+    <div class="reader-body">${note.bodyHtml}</div>
   `;
 
   setDocumentTitle(note);
 }
 
-function setActive(slug, { push = true } = {}) {
-  const note = getNoteBySlug(slug) || state.filtered[0] || state.notes[0] || null;
-  if (!note) {
-    renderReader(null);
-    return;
-  }
-
-  state.activeSlug = note.slug;
-  renderList();
-  renderReader(note);
-
-  if (push) {
-    history.replaceState(null, '', hashForSlug(note.slug));
-  }
-
-  requestAnimationFrame(() => {
-    document.querySelector(`[data-slug="${CSS.escape(note.slug)}"]`)?.scrollIntoView({ block: 'nearest' });
-  });
+function scrollActiveIntoView() {
+  const activeButton = document.querySelector(`[data-slug="${CSS.escape(state.activeSlug || '')}"]`);
+  activeButton?.scrollIntoView({ block: 'nearest' });
 }
 
-function pickRandom() {
-  const pool = state.filtered.length ? state.filtered : state.notes;
-  const selected = pool[Math.floor(Math.random() * pool.length)];
-  if (selected) {
-    setActive(selected.slug);
-  }
+function syncHash(note, shouldSyncHash) {
+  if (!shouldSyncHash) return;
+
+  const next = note ? hashForSlug(note.slug) : `${location.pathname}${location.search}`;
+  history.replaceState(null, '', next);
+}
+
+function refreshView({ syncHash = true } = {}) {
+  state.filtered = state.notes.filter(noteMatches);
+  renderTagFilters();
+  renderYearFilter();
+  renderList();
+
+  const current = state.filtered.find((note) => note.slug === state.activeSlug) || state.filtered[0] || null;
+  state.activeSlug = current ? current.slug : null;
+
+  renderReader(current);
+  syncHash(current, syncHash);
+}
+
+function selectNote(slug, { syncHash = true } = {}) {
+  state.activeSlug = slug;
+  refreshView({ syncHash });
+  requestAnimationFrame(scrollActiveIntoView);
 }
 
 async function boot() {
@@ -207,70 +177,57 @@ async function boot() {
   const data = await response.json();
 
   state.notes = data.notes;
-  state.groups = data.groups;
-  state.tags = data.tags;
+  state.tags = [...new Set(data.tags)].sort((a, b) => a.localeCompare(b));
+  state.years = [...new Set(state.notes.map((note) => note.date.slice(0, 4)))].sort((a, b) => b.localeCompare(a));
 
-  els.countNotes.textContent = String(data.counts.notes);
-  els.countGroups.textContent = String(data.counts.groups);
-  els.countTags.textContent = String(data.counts.tags);
-  els.generatedAt.textContent = formatDate.format(new Date(`${data.generatedAt.slice(0, 10)}T12:00:00Z`));
+  const initialSlug = slugFromHash();
+  if (initialSlug) {
+    state.activeSlug = initialSlug;
+  } else {
+    state.activeSlug = state.notes[0]?.slug || null;
+  }
 
   if (location.hash === '#top') {
-    history.replaceState(null, '', '#');
+    history.replaceState(null, '', `${location.pathname}${location.search}`);
   }
 
-  renderFilters();
-  renderList();
-
-  const initialSlug = slugFromHash() || state.notes[0]?.slug || null;
-  if (initialSlug) {
-    setActive(initialSlug, { push: false });
-  } else {
-    renderReader(null);
-  }
+  refreshView({ syncHash: true });
 }
 
-els.search.addEventListener('input', (event) => {
-  state.search = event.target.value;
-  renderList();
-  const active = getNoteBySlug(state.activeSlug);
-  const fallback = state.filtered[0] || null;
-  renderReader(active && noteMatches(active) ? active : fallback);
+els.tagFilters.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-tag]');
+  if (!button) return;
+
+  state.selectedTag = button.dataset.tag;
+  refreshView();
 });
 
-els.groupFilters.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-group]');
-  if (!button) return;
-  state.group = button.dataset.group;
-  renderFilters();
-  renderList();
-  const active = getNoteBySlug(state.activeSlug);
-  const fallback = state.filtered[0] || null;
-  renderReader(active && noteMatches(active) ? active : fallback);
+els.yearFilter.addEventListener('change', (event) => {
+  state.selectedYear = event.target.value;
+  refreshView();
 });
 
 els.noteList.addEventListener('click', (event) => {
   const button = event.target.closest('[data-slug]');
   if (!button) return;
-  setActive(button.dataset.slug);
+
+  selectNote(button.dataset.slug);
 });
 
-els.randomBtn.addEventListener('click', pickRandom);
-els.latestBtn.addEventListener('click', () => setActive(state.notes[0]?.slug));
 els.clearBtn.addEventListener('click', () => {
-  state.search = '';
-  state.group = 'all';
-  els.search.value = '';
-  renderFilters();
-  renderList();
-  setActive(state.notes[0]?.slug, { push: false });
+  state.selectedTag = 'all';
+  state.selectedYear = 'all';
+  state.activeSlug = state.notes[0]?.slug || null;
+  refreshView();
 });
 
 window.addEventListener('hashchange', () => {
   const slug = slugFromHash();
-  if (slug) {
-    setActive(slug, { push: false });
-  }
+  if (!slug || !getNoteBySlug(slug)) return;
+
+  state.activeSlug = slug;
+  refreshView({ syncHash: false });
+  requestAnimationFrame(scrollActiveIntoView);
 });
 
 boot().catch((error) => {
@@ -280,7 +237,7 @@ boot().catch((error) => {
       <div>
         <p class="reader-kicker">Error</p>
         <h2>Could not load notes</h2>
-        <p>${error.message}</p>
+        <p>${escapeHtml(error.message)}</p>
       </div>
     </div>
   `;

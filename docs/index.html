@@ -24,125 +24,46 @@
           <span>THOUGHTS</span>
           <span>atomic notes</span>
         </a>
-
-        <nav class="topnav" aria-label="Primary">
-          <a href="#contents">Contents</a>
-          <a href="#catalog">Catalog</a>
-          <a href="#colophon">Colophon</a>
-          <a href="https://github.com/sonomirco/thoughts" target="_blank" rel="noreferrer noopener">GitHub</a>
-        </nav>
+        <a class="repo-link" href="https://github.com/sonomirco/thoughts" target="_blank" rel="noreferrer noopener">
+          GitHub
+        </a>
       </header>
 
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">FIG_001 · THOUGHT VAULT V1.0 · 2026 OPEN SOURCE</p>
-          <h1>Thoughts<br />from Scratch</h1>
-          <p class="lede">
-            A flat vault of short notes on construction, product thinking, AI, and the systems between them.
-          </p>
-          <p class="lede italic">
-            Maintained in Markdown, rendered as a simple reading layer, and published on GitHub Pages.
-          </p>
-          <div class="hero-actions">
-            <button id="random-btn" class="hero-btn" type="button">Random note</button>
-            <button id="latest-btn" class="hero-btn" type="button">Latest note</button>
-            <a class="hero-btn hero-link" href="https://github.com/sonomirco/thoughts" target="_blank" rel="noreferrer noopener">
-              GitHub
-            </a>
-          </div>
-        </div>
-
-        <div class="hero-meta" id="contents">
-          <div class="meta-card">
-            <span class="meta-label">Notes</span>
-            <strong id="count-notes">0</strong>
-          </div>
-          <div class="meta-card">
-            <span class="meta-label">Groups</span>
-            <strong id="count-groups">0</strong>
-          </div>
-          <div class="meta-card">
-            <span class="meta-label">Tags</span>
-            <strong id="count-tags">0</strong>
-          </div>
-          <div class="meta-card">
-            <span class="meta-label">Updated</span>
-            <strong id="generated-at">—</strong>
-          </div>
+          <h1>Thoughts</h1>
+          <p class="lede">Short notes on construction, product thinking, AI, and the systems between them.</p>
         </div>
       </section>
 
-      <section class="story">
-        <div class="section-kicker">How this works</div>
-        <div class="story-grid">
-          <p>
-            Most note archives end up scattered: a title here, a tag cloud there, a wall of text somewhere else. This
-            page keeps the vault flat and lets the metadata do the organization.
-          </p>
-          <p>
-            Each note is stored as Markdown at the repo root. The reader pulls frontmatter, builds the archive, and
-            keeps the note itself as the source of truth. Search, tags, and related links are the navigation layer.
-          </p>
+      <section class="filters-panel" aria-label="Filters">
+        <div class="filter-block">
+          <div class="section-kicker">Tags</div>
+          <nav id="tag-filters" class="chip-row" aria-label="Tag filters"></nav>
         </div>
+
+        <div class="filter-block">
+          <div class="section-kicker">Date</div>
+          <label class="select-wrap" for="year-filter">
+            <select id="year-filter" aria-label="Date filter"></select>
+          </label>
+        </div>
+
       </section>
 
       <section class="catalog-shell" id="catalog">
-        <div class="toolbar" aria-label="Search and filters">
-          <label class="search">
-            <span class="search-label">Search</span>
-            <input id="search-input" type="search" placeholder="Title, tag, group, or text" autocomplete="off" />
-          </label>
-
-          <button id="clear-btn" class="action-btn" type="button">Clear filters</button>
-        </div>
-
-        <nav class="filters" id="group-filters" aria-label="Group filters"></nav>
-
-        <div class="progress" aria-label="Current progress">
-          <div class="progress-card">
-            <span class="meta-label">Current progress</span>
-            <strong id="result-count">0 notes</strong>
-          </div>
-          <div class="progress-card">
-            <span class="meta-label">Archive</span>
-            <strong>Flat vault</strong>
-          </div>
-          <div class="progress-card">
-            <span class="meta-label">Entry points</span>
-            <strong>Search, tags, latest</strong>
-          </div>
-        </div>
+        <button id="clear-btn" class="clear-btn" type="button">Clear filters</button>
 
         <main class="layout">
           <aside class="index-panel" aria-label="Note index">
             <div class="index-header">
               <p class="index-title">Catalog</p>
-              <span id="result-count-dup" class="result-count">0 notes</span>
             </div>
             <div id="note-list" class="note-list"></div>
           </aside>
 
           <article id="reader" class="reader" aria-live="polite"></article>
         </main>
-      </section>
-
-      <section class="colophon" id="colophon" aria-label="Colophon">
-        <div>
-          <p class="section-label">Colophon</p>
-          <p>
-            The entire vault lives in Markdown at the repository root. This page is generated from the notes and
-            published through GitHub Pages.
-          </p>
-        </div>
-
-        <div class="colophon-grid">
-          <a class="pill" href="https://github.com/sonomirco/thoughts" target="_blank" rel="noreferrer noopener">
-            github.com/sonomirco/thoughts
-          </a>
-          <a class="pill" href="./notes.json" target="_blank" rel="noreferrer noopener">notes.json</a>
-          <span class="pill">Build: `node scripts/build-site.mjs`</span>
-          <span class="pill">Serve: `main` branch · `/docs`</span>
-        </div>
       </section>
     </div>
 
