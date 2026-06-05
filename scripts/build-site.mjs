@@ -188,6 +188,39 @@ function parseDate(value) {
   return iso;
 }
 
+function extractSources(footerText) {
+  if (!footerText) return [];
+
+  const lines = footerText.split('\n');
+  const sources = [];
+  let inSources = false;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      continue;
+    }
+
+    if (!inSources) {
+      if (/^sources:?$/i.test(line)) {
+        inSources = true;
+      }
+      continue;
+    }
+
+    const body = line.replace(/^-+\s*/, '').trim();
+    const linkMatch = body.match(/^\[[^\]]+\]\((https?:\/\/[^)\s]+)\)$/);
+    const urlMatch = body.match(/(https?:\/\/\S+)/);
+    const url = linkMatch ? linkMatch[1] : urlMatch ? urlMatch[1].replace(/[)\].,]+$/, '') : null;
+
+    if (url) {
+      sources.push(url);
+    }
+  }
+
+  return [...new Set(sources)];
+}
+
 async function readNote(file) {
   const fullPath = path.join(repoRoot, file);
   const text = await fs.readFile(fullPath, 'utf8');
@@ -210,6 +243,7 @@ async function readNote(file) {
   const title = path.basename(file, '.md');
   const slug = slugify(title);
   const stats = await fs.stat(fullPath);
+  const sources = extractSources(footer);
 
   return {
     file,
@@ -220,6 +254,7 @@ async function readNote(file) {
     date: parseDate(frontmatter.date) || stats.mtime.toISOString().slice(0, 10),
     content,
     footer,
+    sources,
     raw: normalized,
     contentText: stripMarkdown(content),
     footerText: stripMarkdown(footer),
@@ -295,6 +330,7 @@ async function main() {
       excerpt: note.excerpt,
       bodyHtml: note.bodyHtml,
       footerHtml: note.footerHtml,
+      sources: note.sources,
       links: note.links,
       backlinks: note.backlinks,
       searchText: [

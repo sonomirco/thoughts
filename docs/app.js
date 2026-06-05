@@ -8,7 +8,6 @@ const state = {
 const els = {
   noteList: document.getElementById('note-list'),
   reader: document.getElementById('reader'),
-  catalogStatus: document.getElementById('catalog-status'),
 };
 
 const formatDate = new Intl.DateTimeFormat('en-US', {
@@ -53,16 +52,6 @@ function prettyTag(tag) {
 
 function noteMatches(note) {
   return state.activeTag === 'all' || note.tags.includes(state.activeTag);
-}
-
-function renderCatalogStatus() {
-  if (state.activeTag === 'all') {
-    els.catalogStatus.textContent = 'Latest notes first';
-    return;
-  }
-
-  const count = state.filtered.length;
-  els.catalogStatus.textContent = `Filtered by ${prettyTag(state.activeTag)} · ${count} note${count === 1 ? '' : 's'}`;
 }
 
 function renderList() {
@@ -130,15 +119,19 @@ function renderConnections(note) {
   `;
 }
 
-function renderReferences(note) {
-  if (!note.footerHtml) {
+function renderSources(note) {
+  if (!note.sources?.length) {
     return '';
   }
 
   return `
     <section class="reader-section">
-      <h3 class="section-label">References</h3>
-      <div class="reader-body footer-copy">${note.footerHtml}</div>
+      <h3 class="section-label">Sources</h3>
+      <div class="pill-row">
+        ${note.sources
+          .map((url) => `<a class="pill" href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(url)}</a>`)
+          .join('')}
+      </div>
     </section>
   `;
 }
@@ -174,7 +167,7 @@ function renderReader(note) {
       <div class="reader-body">${note.bodyHtml}</div>
     </article>
 
-    ${renderReferences(note)}
+    ${renderSources(note)}
     ${renderConnections(note)}
   `;
 
@@ -195,7 +188,6 @@ function syncHash(note, shouldSyncHash) {
 
 function refreshView({ updateHash = true } = {}) {
   state.filtered = state.notes.filter(noteMatches);
-  renderCatalogStatus();
   renderList();
 
   const current = state.filtered.find((note) => note.slug === state.activeSlug) || state.filtered[0] || null;
