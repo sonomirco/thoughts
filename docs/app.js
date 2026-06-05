@@ -120,28 +120,11 @@ function renderConnections(note) {
     .map((target) => `<a class="pill" href="${hashForSlug(target.slug)}">${escapeHtml(target.title)}</a>`)
     .join('');
 
-  const backlinks = note.backlinks
-    .map((slug) => getNoteBySlug(slug))
-    .filter(Boolean)
-    .map((source) => `<a class="pill" href="${hashForSlug(source.slug)}">${escapeHtml(source.title)}</a>`)
-    .join('');
-
   return `
     <section class="reader-section">
-      <h3 class="section-label">Connections</h3>
-      <div class="connections-grid">
-        <div>
-          <div class="subhead">Related notes</div>
-          <div class="pill-row">
-            ${related || '<span class="empty-state">No related notes yet.</span>'}
-          </div>
-        </div>
-        <div>
-          <div class="subhead">Referenced by</div>
-          <div class="pill-row">
-            ${backlinks || '<span class="empty-state">Nothing points here yet.</span>'}
-          </div>
-        </div>
+      <h3 class="section-label">Connected notes</h3>
+      <div class="pill-row">
+        ${related || '<span class="empty-state">No connected notes yet.</span>'}
       </div>
     </section>
   `;
@@ -210,16 +193,16 @@ function syncHash(note, shouldSyncHash) {
   history.replaceState(null, '', next);
 }
 
-function refreshView({ syncHash = true } = {}) {
+function refreshView({ updateHash = true } = {}) {
   state.filtered = state.notes.filter(noteMatches);
   renderCatalogStatus();
   renderList();
 
-  const current = getNoteBySlug(state.activeSlug) || state.notes[0] || null;
+  const current = state.filtered.find((note) => note.slug === state.activeSlug) || state.filtered[0] || null;
   state.activeSlug = current ? current.slug : null;
 
   renderReader(current);
-  syncHash(current, syncHash);
+  syncHash(current, updateHash);
 }
 
 function selectNote(slug, { syncHash = true } = {}) {
@@ -227,7 +210,7 @@ function selectNote(slug, { syncHash = true } = {}) {
   if (!note) return;
 
   state.activeSlug = note.slug;
-  refreshView({ syncHash });
+  refreshView({ updateHash: syncHash });
   requestAnimationFrame(scrollActiveIntoView);
 }
 
@@ -248,7 +231,7 @@ async function boot() {
     history.replaceState(null, '', `${location.pathname}${location.search}`);
   }
 
-  refreshView({ syncHash: true });
+  refreshView({ updateHash: true });
 }
 
 els.noteList.addEventListener('click', (event) => {
@@ -270,7 +253,7 @@ window.addEventListener('hashchange', () => {
   if (!slug || !getNoteBySlug(slug)) return;
 
   state.activeSlug = slug;
-  refreshView({ syncHash: false });
+  refreshView({ updateHash: false });
   requestAnimationFrame(scrollActiveIntoView);
 });
 

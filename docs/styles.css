@@ -25,7 +25,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text);
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Source Serif 4", Georgia, serif;
   background:
     radial-gradient(circle at top, rgba(128, 149, 255, 0.09), transparent 26%),
     linear-gradient(180deg, #090a11 0%, #06070b 100%);
@@ -76,6 +76,7 @@ select {
   display: inline-flex;
   flex-direction: column;
   gap: 3px;
+  font-family: "JetBrains Mono", monospace;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -94,6 +95,7 @@ select {
 
 .repo-link {
   color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.88rem;
   letter-spacing: 0.06em;
 }
@@ -106,11 +108,12 @@ select {
 .hero h1 {
   margin: 0;
   color: #7f97ff;
-  font-family: "Press Start 2P", monospace;
-  font-size: clamp(2.1rem, 5vw, 4.5rem);
-  line-height: 1.18;
-  letter-spacing: 0.01em;
+  font-family: "VT323", monospace;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  line-height: 0.84;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  font-weight: 400;
 }
 
 .lede {
@@ -139,7 +142,7 @@ select {
 .catalog-title {
   margin: 0;
   color: var(--accent);
-  font-family: "Space Mono", monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.78rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -147,7 +150,7 @@ select {
 
 .catalog-status {
   margin: 0;
-  color: var(--muted);
+  color: var(--accent-strong);
   font-size: 0.88rem;
 }
 
@@ -188,7 +191,7 @@ select {
 .year-heading {
   margin: 0 0 8px;
   color: var(--faint);
-  font-family: "Space Mono", monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -231,7 +234,7 @@ select {
 }
 
 .note-meta-line time {
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .note-btn h3 {
@@ -270,7 +273,7 @@ select {
 .reader-kicker {
   margin: 0;
   color: var(--accent);
-  font-family: "Space Mono", monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.74rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -311,6 +314,7 @@ select {
   background: rgba(255, 255, 255, 0.02);
   cursor: pointer;
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+  color: var(--accent-strong);
 }
 
 .tag-chip-button:hover {
@@ -369,7 +373,7 @@ select {
 }
 
 .reader-body a {
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .reader-body code {
@@ -388,23 +392,11 @@ select {
 
 .section-label {
   margin: 0 0 12px;
-  color: var(--faint);
-  font-family: "Space Mono", monospace;
+  color: var(--accent-strong);
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-}
-
-.subhead {
-  margin: 0 0 10px;
-  color: var(--muted);
-  font-size: 0.86rem;
-}
-
-.connections-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
 }
 
 .pill-row {
@@ -418,10 +410,10 @@ select {
   align-items: center;
   min-height: 32px;
   padding: 0 10px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(174, 189, 255, 0.28);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
+  background: rgba(128, 149, 255, 0.08);
+  color: var(--accent-strong);
   font-size: 0.9rem;
 }
 
@@ -443,8 +435,7 @@ select {
     align-items: stretch;
   }
 
-  .layout,
-  .connections-grid {
+  .layout {
     grid-template-columns: 1fr;
   }
 

@@ -105,7 +105,16 @@ function renderMarkdown(text, resolveLink) {
 
   const flushList = () => {
     if (!list.length) return;
-    const items = list.map((item) => `<li>${renderInline(item, resolveLink)}</li>`).join('');
+    const items = list
+      .map((item) => {
+        if (/^https?:\/\/\S+$/.test(item)) {
+          const href = escapeHtml(item);
+          return `<li><a href="${href}" target="_blank" rel="noreferrer noopener">${href}</a></li>`;
+        }
+
+        return `<li>${renderInline(item, resolveLink)}</li>`;
+      })
+      .join('');
     html.push(`<ul>${items}</ul>`);
     list = [];
   };
