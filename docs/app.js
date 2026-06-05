@@ -211,6 +211,10 @@ async function boot() {
   els.countTags.textContent = String(data.counts.tags);
   els.generatedAt.textContent = formatDate.format(new Date(`${data.generatedAt.slice(0, 10)}T12:00:00Z`));
 
+  if (location.hash === '#top') {
+    history.replaceState(null, '', '#');
+  }
+
   renderFilters();
   renderList();
 

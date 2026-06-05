@@ -18,18 +18,31 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="backdrop"></div>
-    <div class="page">
+    <div class="page" id="top">
+      <header class="topbar">
+        <a class="brand" href="#top">
+          <span>THOUGHTS</span>
+          <span>atomic notes</span>
+        </a>
+
+        <nav class="topnav" aria-label="Primary">
+          <a href="#contents">Contents</a>
+          <a href="#catalog">Catalog</a>
+          <a href="#colophon">Colophon</a>
+          <a href="https://github.com/sonomirco/thoughts" target="_blank" rel="noreferrer noopener">GitHub</a>
+        </nav>
+      </header>
+
       <header class="masthead">
         <div class="masthead-copy">
-          <p class="eyebrow">ATOMIC NOTES / GITHUB PAGES READER</p>
+          <p class="eyebrow">FIG_001 · THOUGHT VAULT · 2026 OPEN SOURCE</p>
           <h1>Thoughts</h1>
           <p class="lede">
-            A growing vault of short notes on construction, product thinking, AI, and the systems between them.
+            A flat vault of short notes on construction, product thinking, AI, and the systems between them.
           </p>
         </div>
 
-        <div class="masthead-meta">
+        <div class="masthead-meta" id="contents">
           <div class="meta-card">
             <span class="meta-label">Notes</span>
             <strong id="count-notes">0</strong>
@@ -64,10 +77,10 @@
 
       <nav class="filters" id="group-filters" aria-label="Group filters"></nav>
 
-      <main class="layout">
+      <main class="layout" id="catalog">
         <aside class="index-panel" aria-label="Note index">
           <div class="index-header">
-            <p class="index-title">Archive</p>
+            <p class="index-title">Catalog</p>
             <span id="result-count" class="result-count">0 notes</span>
           </div>
           <div id="note-list" class="note-list"></div>
@@ -75,6 +88,25 @@
 
         <article id="reader" class="reader" aria-live="polite"></article>
       </main>
+
+      <section class="colophon" id="colophon" aria-label="Colophon">
+        <div>
+          <p class="section-label">Colophon</p>
+          <p>
+            The entire vault lives in Markdown at the repository root. This page is generated from the notes and
+            published through GitHub Pages.
+          </p>
+        </div>
+
+        <div class="colophon-grid">
+          <a class="pill" href="https://github.com/sonomirco/thoughts" target="_blank" rel="noreferrer noopener">
+            github.com/sonomirco/thoughts
+          </a>
+          <a class="pill" href="./notes.json" target="_blank" rel="noreferrer noopener">notes.json</a>
+          <span class="pill">Build: `node scripts/build-site.mjs`</span>
+          <span class="pill">Serve: `main` branch · `/docs`</span>
+        </div>
+      </section>
     </div>
 
     <script type="module" src="./app.js"></script>
