@@ -36,29 +36,14 @@
         </div>
       </section>
 
-      <section class="filters-panel" aria-label="Filters">
-        <div class="filter-block">
-          <div class="section-kicker">Tags</div>
-          <nav id="tag-filters" class="chip-row" aria-label="Tag filters"></nav>
-        </div>
-
-        <div class="filter-block">
-          <div class="section-kicker">Date</div>
-          <label class="select-wrap" for="year-filter">
-            <select id="year-filter" aria-label="Date filter"></select>
-          </label>
-        </div>
-
-      </section>
-
       <section class="catalog-shell" id="catalog">
-        <button id="clear-btn" class="clear-btn" type="button">Clear filters</button>
+        <header class="catalog-head">
+          <p class="catalog-title">Catalog</p>
+          <p id="catalog-status" class="catalog-status" aria-live="polite">Latest notes first</p>
+        </header>
 
         <main class="layout">
           <aside class="index-panel" aria-label="Note index">
-            <div class="index-header">
-              <p class="index-title">Catalog</p>
-            </div>
             <div id="note-list" class="note-list"></div>
           </aside>
 
