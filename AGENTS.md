@@ -1,6 +1,6 @@
 # Thoughts — Folder Guide
 
-This folder contains 62 thinking notes on AEC, AI, product strategy, organisational design, and digital transformation. Each note is a single idea worked through in prose — not a reference dump.
+This folder contains a growing set of thinking notes on AEC, AI, product strategy, organisational design, and digital transformation. Each note is a single idea worked through in prose — not a reference dump.
 
 ## What a note is
 
