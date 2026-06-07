@@ -35,7 +35,7 @@ function slugFromHash() {
 }
 
 function setDocumentTitle(note) {
-  document.title = note ? `${note.title} · Thoughts` : 'Thoughts';
+  document.title = note ? `${note.title} · Same Difference` : 'Same Difference';
 }
 
 function getNoteBySlug(slug) {
@@ -141,7 +141,7 @@ function renderReader(note) {
     els.reader.innerHTML = `
       <div class="reader-empty">
         <div>
-          <p class="reader-kicker">Thoughts</p>
+          <p class="reader-kicker">Same Difference</p>
           <h2>Select a note</h2>
           <p>Pick a note from the archive or click a tag inside a note to narrow the catalogue.</p>
         </div>
