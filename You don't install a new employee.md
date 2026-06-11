@@ -1,5 +1,4 @@
 ---
-date: 2025-10-04
 groups:
 - Future of work
 - Technology
@@ -10,10 +9,9 @@ tags:
 - construction-tech
 - future-of-work
 - digital-engineering
+date: 2026-06-10
 ---
 We keep trying to install AI agents.
-
-However, you don't just install a new employee.
 
 When someone joins a team, nobody hands them the keys on day one. Someone provisions their access to the right drives, project servers, and models. A colleague sits down with them to explain the unwritten rules: for instance, that a specific client always reworks the brief at stage three, that the local authority enforces stricter regulations than the national code, or which subcontractor should be monitored closely for scheduling. Their early work is scrutinised closely. They gain autonomy through support, not by being activated.
 

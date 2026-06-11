@@ -10,7 +10,7 @@ tags:
 - technology-adoption
 - organizational-design
 - digital-engineering
-date: 2026-06-06
+date: 2026-06-17
 ---
 One of the most common concerns about navigating AI is the difficulty in finding a vendor-neutral partner for assistance.
 
