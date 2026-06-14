@@ -7,6 +7,7 @@ const state = {
 };
 
 const els = {
+  catalogHead: document.querySelector('.catalog-head'),
   noteList: document.getElementById('note-list'),
   reader: document.getElementById('reader'),
   search: document.getElementById('search'),
@@ -219,6 +220,23 @@ function scrollActiveIntoView() {
   activeButton?.scrollIntoView({ block: 'nearest' });
 }
 
+const compactLayoutQuery = window.matchMedia('(max-width: 1100px)');
+
+function scrollSelectionIntoView() {
+  if (compactLayoutQuery.matches) {
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    els.catalogHead?.scrollIntoView({ block: 'start' });
+    requestAnimationFrame(() => {
+      root.style.scrollBehavior = previousScrollBehavior;
+    });
+    return;
+  }
+
+  scrollActiveIntoView();
+}
+
 function syncHash(note, shouldSyncHash) {
   if (!shouldSyncHash) return;
 
@@ -244,13 +262,13 @@ function selectNote(slug, { syncHash = true } = {}) {
 
   state.activeSlug = note.slug;
   refreshView({ updateHash: syncHash });
-  requestAnimationFrame(scrollActiveIntoView);
+  requestAnimationFrame(scrollSelectionIntoView);
 }
 
 function setTagFilter(tag) {
   state.activeTag = state.activeTag === tag ? 'all' : tag;
   refreshView();
-  requestAnimationFrame(scrollActiveIntoView);
+  requestAnimationFrame(scrollSelectionIntoView);
 }
 
 async function boot() {
@@ -348,7 +366,7 @@ window.addEventListener('hashchange', () => {
 
   state.activeSlug = slug;
   refreshView({ updateHash: false });
-  requestAnimationFrame(scrollActiveIntoView);
+  requestAnimationFrame(scrollSelectionIntoView);
 });
 
 boot().catch((error) => {

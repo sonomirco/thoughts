@@ -587,11 +587,19 @@ select {
 
   .layout {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "reader"
+      "index";
   }
 
   .index-panel {
+    grid-area: index;
     position: static;
     max-height: none;
+  }
+
+  .reader {
+    grid-area: reader;
   }
 }
 
